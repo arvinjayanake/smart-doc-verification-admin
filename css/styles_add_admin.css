@@ -1,0 +1,50 @@
+/* --- Add Admin form styles --- */
+.form-block{
+    display:block;
+    margin-top:6px;
+}
+
+.grid-2{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+    margin-bottom:12px;
+}
+@media (max-width: 760px){
+    .grid-2{ grid-template-columns: 1fr; }
+}
+
+.form-block label span{
+    display:block;
+    font-size:13px;
+    color:#475569;
+    margin:0 0 6px 2px;
+    font-weight:500;
+}
+
+.form-block input, select{
+    width:100%;
+    background:#fff;
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:10px;
+    padding:10px 12px;
+    outline:none;
+}
+.form-block input:focus{
+    border-color:#c7d2fe;
+    box-shadow:0 0 0 3px #e0e7ff;
+}
+
+.form-actions{
+    display:flex;
+    gap:10px;
+    justify-content:flex-end;
+    margin-top:8px;
+}
+
+.hint.muted{
+    margin-top:10px;
+    color:#6b7280;
+    font-size:13px;
+}

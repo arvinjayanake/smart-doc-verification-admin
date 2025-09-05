@@ -1,0 +1,33 @@
+/* Danger-styled card for destructive actions */
+.danger-card{
+    border-color:#fecaca;
+    box-shadow:var(--shadow);
+}
+.danger-card .card-title{
+    color:#991b1b;
+}
+
+/* Info note in delete page */
+.delete-note{
+    display:flex; gap:8px; align-items:flex-start;
+    margin:8px 2px 12px 2px; padding:10px 12px;
+    border-radius:10px; background:#fff7ed; border:1px solid #fed7aa;
+    color:#7c2d12; font-size:13px;
+}
+
+/* Reuse form-block and grid-2 from add page */
+.form-block{ display:block; margin-top:6px; }
+.grid-2{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;
+}
+@media (max-width: 760px){ .grid-2{ grid-template-columns:1fr; } }
+
+.form-block label span{
+    display:block; font-size:13px; color:#475569; margin:0 0 6px 2px; font-weight:500;
+}
+.form-block input{
+    width:100%; background:#fff; border:1px solid var(--border);
+    color:var(--text); border-radius:10px; padding:10px 12px; outline:none;
+}
+.form-block input[readonly]{ background:#f8fafc; color:#475569; }
+.form-actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:8px; }

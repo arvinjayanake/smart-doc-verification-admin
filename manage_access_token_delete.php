@@ -18,6 +18,7 @@
 <head>
     <meta charset="utf-8" />
     <title>Smart Doc • Delete Access Token</title>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Professional font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />

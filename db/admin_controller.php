@@ -160,28 +160,3 @@ class AdminController {
         }
     }
 }
-
-// Example usage:
-/*
-// Create admin
-$created = AdminController::createAdmin('John Doe', 'john@example.com', 'password123');
-
-// Login
-$admin = AdminController::login('john@example.com', 'password123');
-if ($admin) {
-    echo "Login successful! Welcome " . $admin['name'];
-} else {
-    echo "Invalid credentials";
-}
-
-// Get all admins
-$admins = AdminController::getAllAdmins();
-
-// Update admin
-$updated = AdminController::updateAdmin(1, 'Jane Doe', 'jane@example.com');
-
-// Delete admin
-$deleted = AdminController::deleteAdmin(1);
-*/
-
-?>

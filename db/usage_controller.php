@@ -30,7 +30,7 @@ class UsageController {
                 SUM(CASE WHEN u.status = 0 THEN 1 ELSE 0 END) as failed_requests,
                 COUNT(DISTINCT u.doc_type) as unique_doc_types,
                 COUNT(DISTINCT DATE(u.created_at)) as active_days
-                FROM usage u
+                FROM `usage` u
                 INNER JOIN access_token a ON u.access_token_id = a.id
                 $whereClause";
 
@@ -78,7 +78,7 @@ class UsageController {
                 COUNT(u.id) as total_requests,
                 SUM(CASE WHEN u.status = 1 THEN 1 ELSE 0 END) as successful_requests,
                 SUM(CASE WHEN u.status = 0 THEN 1 ELSE 0 END) as failed_requests
-                FROM usage u
+                FROM `usage` u
                 INNER JOIN access_token a ON u.access_token_id = a.id
                 $whereClause
                 GROUP BY DATE(u.created_at)
@@ -114,7 +114,7 @@ class UsageController {
                 HOUR(u.created_at) as hour,
                 COUNT(u.id) as total_requests,
                 SUM(CASE WHEN u.status = 1 THEN 1 ELSE 0 END) as successful_requests
-                FROM usage u
+                FROM `usage` u
                 INNER JOIN access_token a ON u.access_token_id = a.id
                 $whereClause
                 GROUP BY HOUR(u.created_at)
@@ -151,7 +151,7 @@ class UsageController {
                 COUNT(u.id) as request_count,
                 SUM(CASE WHEN u.status = 1 THEN 1 ELSE 0 END) as successful_count,
                 ROUND((SUM(CASE WHEN u.status = 1 THEN 1 ELSE 0 END) / COUNT(u.id)) * 100, 2) as success_rate
-                FROM usage u
+                FROM `usage` u
                 INNER JOIN access_token a ON u.access_token_id = a.id
                 $whereClause
                 GROUP BY u.doc_type
@@ -171,32 +171,44 @@ class UsageController {
     public static function getStatusSummary(int $organizationId = 0, string $startDate = '', string $endDate = ''): array {
         $whereClause = "WHERE 1=1";
         $params = [];
+        $subWhereClause = "WHERE 1=1";
+        $subParams = [];
 
         if ($organizationId > 0) {
             $whereClause .= " AND a.organization_id = ?";
+            $subWhereClause .= " AND a2.organization_id = ?";
             $params[] = $organizationId;
+            $subParams[] = $organizationId;
         }
 
         if (!empty($startDate) && !empty($endDate)) {
             $whereClause .= " AND u.created_at BETWEEN ? AND ?";
+            $subWhereClause .= " AND u2.created_at BETWEEN ? AND ?";
             $params[] = $startDate . ' 00:00:00';
             $params[] = $endDate . ' 23:59:59';
+            $subParams[] = $startDate . ' 00:00:00';
+            $subParams[] = $endDate . ' 23:59:59';
         }
+
+        // Build subquery for total count
+        $subQuery = "SELECT COUNT(*) FROM `usage` u2 
+                    INNER JOIN access_token a2 ON u2.access_token_id = a2.id 
+                    $subWhereClause";
 
         $sql = "SELECT 
                 u.status,
                 COUNT(u.id) as count,
-                ROUND((COUNT(u.id) / (SELECT COUNT(*) FROM usage u2 
-                                     INNER JOIN access_token a2 ON u2.access_token_id = a2.id 
-                                     $whereClause)) * 100, 2) as percentage
-                FROM usage u
+                ROUND((COUNT(u.id) / ($subQuery)) * 100, 2) as percentage
+                FROM `usage` u
                 INNER JOIN access_token a ON u.access_token_id = a.id
                 $whereClause
                 GROUP BY u.status
                 ORDER BY u.status";
 
         try {
-            return execute_query($sql, $params);
+            // Combine params for the main query (subquery params come first)
+            $allParams = array_merge($subParams, $params);
+            return execute_query($sql, $allParams);
         } catch (Exception $e) {
             error_log("Get status summary error: " . $e->getMessage());
             return [];
@@ -207,11 +219,11 @@ class UsageController {
      * Get top organizations by usage (if no organization filter)
      */
     public static function getTopOrganizations(string $startDate = '', string $endDate = '', int $limit = 10): array {
-        $whereClause = "";
+        $whereClause = "WHERE 1=1";
         $params = [];
 
         if (!empty($startDate) && !empty($endDate)) {
-            $whereClause = "WHERE u.created_at BETWEEN ? AND ?";
+            $whereClause .= " AND u.created_at BETWEEN ? AND ?";
             $params[] = $startDate . ' 00:00:00';
             $params[] = $endDate . ' 23:59:59';
         }
@@ -222,7 +234,7 @@ class UsageController {
                 COUNT(u.id) as total_requests,
                 SUM(CASE WHEN u.status = 1 THEN 1 ELSE 0 END) as successful_requests,
                 ROUND((SUM(CASE WHEN u.status = 1 THEN 1 ELSE 0 END) / COUNT(u.id)) * 100, 2) as success_rate
-                FROM usage u
+                FROM `usage` u
                 INNER JOIN access_token a ON u.access_token_id = a.id
                 INNER JOIN organization o ON a.organization_id = o.id
                 $whereClause
@@ -266,7 +278,7 @@ class UsageController {
                     WHEN u.status = 1 THEN 'Success'
                     ELSE 'Failed'
                 END as status_text
-                FROM usage u
+                FROM `usage` u
                 INNER JOIN access_token a ON u.access_token_id = a.id
                 INNER JOIN organization o ON a.organization_id = o.id
                 $whereClause

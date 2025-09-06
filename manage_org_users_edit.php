@@ -1,4 +1,5 @@
 <?php
+require_once 'admin_validation.php';
 require_once 'db\organization_user_controller.php';
 require_once 'db\organization_controller.php';
 
@@ -46,10 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <a href="manage_org_users.php"><i class="fa-solid fa-users"></i><span>Org Users</span></a>
             <a href="manage_access_token.php"><i class="fa-solid fa-key"></i><span>Access Tokens</span></a>
             <a href="manage_usage.php"><i class="fa-solid fa-chart-line"></i><span>Usage</span></a>
+            <a href="admin_logout.php"><i class="fa-solid fa-sign-out"></i><span>Log Out</span></a>
         </nav>
-        <div class="sidebar-foot">
-            <span><i class="fa-regular fa-circle-check"></i> v1.0</span>
-        </div>
     </aside>
 
     <!-- Content -->
